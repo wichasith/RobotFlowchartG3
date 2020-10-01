@@ -7,9 +7,24 @@ int n = 30;
 
 World[][] world;
 Barrier[] barrier;
+Robot robot;
 
 
-void keyPressed(){
+void keyReleased(){
+
+    if(key == 'w'){
+      robot.row-=1;
+    }
+    if(key == 's'){
+      robot.row+=1;
+    }
+    if(key == 'a'){
+      robot.col-=1;
+    }
+    if(key == 'd'){
+      robot.col+=1;
+    }
+    
   
 }
 
@@ -30,6 +45,8 @@ void setup(){
     barrier[i] = new Barrier(rancol, ranrow, 100, 100);
   }
   
+  robot = new Robot(rancol, ranrow);
+  
 }
 
 void draw(){
@@ -45,6 +62,9 @@ void draw(){
     barrier[i].drawBarrier();
   }
 
+  
+  robot.drawRobot();
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////// 
@@ -54,6 +74,7 @@ class World{
   float col;
   float w;
   float h;
+  String[] map = loadStrings("MapV1.txt");
   
   World(float row, float col, float w, float h){
     this.row = row;
@@ -107,7 +128,9 @@ class Robot{
   }
   
   void drawRobot(){
-    
+    fill(255);
+    ellipseMode(CORNER);
+    ellipse(this.col*100, this.row*100, 100, 100);
   }
   
   void move(){
