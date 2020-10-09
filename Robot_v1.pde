@@ -3,26 +3,61 @@ int column = 10;
 int rancol;
 int ranrow;
 int n = 30;
-
+int rancolTarget ;
+int ranrowTarget ;
 
 World[][] world;
 Barrier[] barrier;
+Target target ;
 Robot robot;
 
 
 void keyReleased(){
-
-    if(key == 'w'){
+    
+    
+    if(key == 'w' && robot.side == "up"){
       robot.row-=1;
+      for (int k = 0 ; k < barrier.length ; k++){
+      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
+        robot.row+=1;
+      }
     }
-    if(key == 's'){
+    if(robot.row == -1){
       robot.row+=1;
     }
-    if(key == 'a'){
+    }
+    if(key == 'w' && robot.side == "down"){
+      robot.row+=1;
+      for (int k = 0 ; k < barrier.length ; k++){
+      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
+        robot.row-=1;
+      }
+    }
+    if(robot.row == row ){
+      robot.row-=1;
+    }
+    }
+    if(key == 'w' && robot.side == "left"){
+      robot.col-=1;
+      for (int k = 0 ; k < barrier.length ; k++){
+      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
+        robot.col+=1;
+      }
+    }
+    if(robot.col == -1){
+      robot.col+=1;
+    }
+    }
+    if(key == 'w' && robot.side == "right"){
+      robot.col+=1;
+      for (int k = 0 ; k < barrier.length ; k++){
+      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
+        robot.col-=1;
+      }
+    }
+    if(robot.col == column){
       robot.col-=1;
     }
-    if(key == 'd'){
-      robot.col+=1;
     }
     
   
@@ -44,8 +79,11 @@ void setup(){
     ranrow = round(random(row));
     barrier[i] = new Barrier(rancol, ranrow, 100, 100);
   }
+  rancolTarget = round(random(column));
+  ranrowTarget = round(random(row));
   
   robot = new Robot(rancol, ranrow);
+  target = new Target(rancolTarget , ranrowTarget) ;
   
 }
 
@@ -64,6 +102,12 @@ void draw(){
 
   
   robot.drawRobot();
+  robot.move() ;
+  if(target.show == true){
+    target.show() ;
+  }
+  target.hide() ;
+  
 
 }
 
@@ -122,23 +166,122 @@ class Barrier{
 class Robot{
   float row;
   float col;
+  String  side ;
   Robot(float row, float col){
     this.row = row;
     this.col = col;
+    side = "up" ;
   }
   
   void drawRobot(){
     fill(255);
-    ellipseMode(CORNER);
-    ellipse(this.col*100, this.row*100, 100, 100);
+    if (side == "up"){
+      line((this.col+(this.col+1))/2*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
+      line((this.col+(this.col+1))/2*100,this.row*100,(this.col)*100,(this.row+1)*100);
+      line((this.col+1)*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
+    }
+    if (side == "left"){
+      line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row)*100);
+      line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row+1)*100);  
+      line((this.col+1)*100,(this.row)*100,(this.col+1)*100,(this.row+1)*100);
+    }
+    if (side == "down"){
+       line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col+1)*100,(this.row)*100);
+       line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col)*100,(this.row)*100);
+       line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+    }
+    if (side == "right"){
+      line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
+      line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
+      line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+    }
   }
   
   void move(){
     
+  
+  
+  if(keyPressed) {
+    fill(124,252,0);
+    
+    if(key == 'a'){
+      if(side == "up"){
+        line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row)*100);
+      line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row+1)*100);  
+      line((this.col+1)*100,(this.row)*100,(this.col+1)*100,(this.row+1)*100);
+        side = "left" ;
+        delay(200);
+      }
+      else if(side == "left"){
+        line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col+1)*100,(this.row)*100);
+      line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col)*100,(this.row)*100);
+      line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+        side = "down" ;
+        delay(200);
+      }
+      else if(side == "down"){
+        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
+      line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
+      line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+        side = "right" ;
+        delay(200);
+      }
+      else if(side == "right"){
+        line((this.col+(this.col+1))/2*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
+      line((this.col+(this.col+1))/2*100,this.row*100,(this.col)*100,(this.row+1)*100);
+      line((this.col+1)*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
+        side = "up" ;
+        delay(200);
+      }
+       
+    }
+    
+    if(key == 'd'){
+      if(side == "up"){
+        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
+        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
+        line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+        side = "right" ;
+        delay(200);
+      }
+      else if(side == "left"){
+        line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col+1)*100,(this.row)*100);
+        line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col)*100,(this.row)*100);
+        line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+        side = "up" ;
+        delay(200);
+      }
+      else if(side == "down"){
+        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
+        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
+        line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+        side = "left" ;
+        delay(200);
+      }
+      else if(side == "right"){
+        line((this.col+(this.col+1))/2*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
+        line((this.col+(this.col+1))/2*100,this.row*100,(this.col)*100,(this.row+1)*100);
+        line((this.col+1)*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
+        side = "down" ;
+        delay(200);
+      }
+    }
+    
+    
+    
+      
+  }
   }
   
   void turn(){
     
+  }
+  float getRowRobot() {
+    return this.row ;
+  }
+  
+  float getColRobot() {
+    return this.col ;
   }
 }
 
@@ -147,15 +290,27 @@ class Robot{
 class Target{
   float row;
   float col;
+  int size ;
+  boolean show ;
   Target(float row, float col){
     this.row = row;
     this.col = col;
+    size = 50 ;
+    show = true ;
   }
   
   void show(){
+    fill(255,20,147);
+    ellipseMode(CORNER);
+    ellipse(this.col*100+size/2, this.row*100+size/2, size, size);
+    
     
   }
   void hide(){
+    if (robot.getRowRobot() == this.row && robot.getColRobot() == this.col ){
+      show = false ; 
+      
+    }
     
   }
   
