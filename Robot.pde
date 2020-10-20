@@ -10,60 +10,10 @@ World[][] world;
 Barrier[] barrier;
 Target target ;
 Robot robot;
-
-
-void keyReleased(){
-    
-    
-    if(key == 'w' && robot.side == "up"){
-      robot.row-=1;
-      for (int k = 0 ; k < barrier.length ; k++){
-      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
-        robot.row+=1;
-      }
-    }
-    if(robot.row == -1){
-      robot.row+=1;
-    }
-    }
-    if(key == 'w' && robot.side == "down"){
-      robot.row+=1;
-      for (int k = 0 ; k < barrier.length ; k++){
-      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
-        robot.row-=1;
-      }
-    }
-    if(robot.row == row ){
-      robot.row-=1;
-    }
-    }
-    if(key == 'w' && robot.side == "left"){
-      robot.col-=1;
-      for (int k = 0 ; k < barrier.length ; k++){
-      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
-        robot.col+=1;
-      }
-    }
-    if(robot.col == -1){
-      robot.col+=1;
-    }
-    }
-    if(key == 'w' && robot.side == "right"){
-      robot.col+=1;
-      for (int k = 0 ; k < barrier.length ; k++){
-      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
-        robot.col-=1;
-      }
-    }
-    if(robot.col == column){
-      robot.col-=1;
-    }
-    }
-    
-  
-}
+InputPro input;
 
 void setup(){
+  
   size(1000,1000); 
   
   world = new World[column][row];
@@ -88,7 +38,8 @@ void setup(){
 }
 
 void draw(){
-  background(255);
+  input = new InputPro('w', 'a', 'd');
+  //background(255);
   
   for(int i = 0; i < column ; i++){
    for(int j = 0; j < row; j++){
@@ -101,14 +52,14 @@ void draw(){
   }
 
   
-  robot.drawRobot();
-  robot.move() ;
+  
   if(target.show == true){
     target.show() ;
   }
   target.hide() ;
   
-
+  input.check_input();
+  robot.drawRobot();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////// 
@@ -118,8 +69,8 @@ class World{
   float col;
   float w;
   float h;
-  String[] map = loadStrings("MapV1.txt");
-  
+  String[] map = loadStrings("Map.txt");
+
   World(float row, float col, float w, float h){
     this.row = row;
     this.col = col;
@@ -132,7 +83,10 @@ class World{
     fill(225);
     rect(this.row ,this.col , this.w, this.h); 
   }
-
+  void start()
+  {
+  
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -166,112 +120,201 @@ class Barrier{
 class Robot{
   float row;
   float col;
-  String  side ;
+  char  side ;
+  char[]  sidecollect={'w','a','s','d'};
+  
+ 
   Robot(float row, float col){
     this.row = row;
     this.col = col;
-    side = "up" ;
+    this.side = 'w' ;
   }
   
   void drawRobot(){
     fill(255);
-    if (side == "up"){
+    
+    if (this.side == 'w'){
+      this.robot_up();
+     
+    }
+    if (this.side == 'a'){
+      this.robot_left();
+    }
+    if (this.side == 's'){
+       this.robot_down();
+   
+    }
+    if (this.side == 'd'){
+      this.robot_right();
+    }
+  
+  }
+  void robot_up()
+  {
       line((this.col+(this.col+1))/2*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
       line((this.col+(this.col+1))/2*100,this.row*100,(this.col)*100,(this.row+1)*100);
       line((this.col+1)*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
-    }
-    if (side == "left"){
+  }
+  void robot_left()
+  {
       line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row)*100);
       line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row+1)*100);  
       line((this.col+1)*100,(this.row)*100,(this.col+1)*100,(this.row+1)*100);
-    }
-    if (side == "down"){
+  }
+  void robot_down()
+  {
        line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col+1)*100,(this.row)*100);
        line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col)*100,(this.row)*100);
        line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
-    }
-    if (side == "right"){
+  }
+  void robot_right()
+  {
       line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
       line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
       line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
-    }
   }
   
-  void move(){
-    
   
   
-  if(keyPressed) {
-    fill(124,252,0);
-    
-    if(key == 'a'){
-      if(side == "up"){
-        line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row)*100);
-      line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row+1)*100);  
-      line((this.col+1)*100,(this.row)*100,(this.col+1)*100,(this.row+1)*100);
-        side = "left" ;
-        delay(200);
+  void move_forward(){
+  
+  if(this.side == 'w'){
+      
+      robot.row-=1;
+      for (int k = 0 ; k < barrier.length ; k++){
+      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
+        robot.row+=1;
+      
       }
-      else if(side == "left"){
-        line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col+1)*100,(this.row)*100);
-      line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col)*100,(this.row)*100);
-      line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
-        side = "down" ;
-        delay(200);
+    }
+    if(robot.row == -1){
+      robot.row+=1;
+    }
+   
+    }
+   if(this.side == 'a'){
+      robot.col-=1;
+      for (int k = 0 ; k < barrier.length ; k++){
+      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
+        robot.col+=1;
       }
-      else if(side == "down"){
-        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
-      line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
-      line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
-        side = "right" ;
-        delay(200);
+    }
+    if(robot.col == -1){
+      robot.col+=1;
+    }
+    }
+    if(this.side == 's'){
+      
+      robot.row+=1;
+      for (int k = 0 ; k < barrier.length ; k++){
+      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
+        robot.row-=1;
+      
       }
-      else if(side == "right"){
-        line((this.col+(this.col+1))/2*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
-      line((this.col+(this.col+1))/2*100,this.row*100,(this.col)*100,(this.row+1)*100);
-      line((this.col+1)*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
-        side = "up" ;
-        delay(200);
-      }
+    }
+    if(robot.row == 10){
+      robot.row-=1;
        
     }
     
-    if(key == 'd'){
-      if(side == "up"){
-        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
-        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
-        line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
-        side = "right" ;
-        delay(200);
-      }
-      else if(side == "left"){
-        line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col+1)*100,(this.row)*100);
-        line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col)*100,(this.row)*100);
-        line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
-        side = "up" ;
-        delay(200);
-      }
-      else if(side == "down"){
-        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
-        line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
-        line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
-        side = "left" ;
-        delay(200);
-      }
-      else if(side == "right"){
-        line((this.col+(this.col+1))/2*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
-        line((this.col+(this.col+1))/2*100,this.row*100,(this.col)*100,(this.row+1)*100);
-        line((this.col+1)*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
-        side = "down" ;
-        delay(200);
-      }
     }
     
+    if(this.side == 'd'){
+      robot.col+=1;
+      for (int k = 0 ; k < barrier.length ; k++){
+      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
+        robot.col-=1;
+      }
+    }
+    if(robot.col == column){
+      robot.col-=1;
+    }
+    }
+  }
+  
+  //void turn_left(){
+  //if(keyPressed) {
+    //fill(124,252,0);
+    
+    //if(key == 'a'){
+      //if(side == "up"){
+        //this.robot_up();
+        //side = "left" ;
+        //delay(200);
+      //}
+      //else if(side == "left"){
+        //this.robot_left();
+        //side = "down" ;
+        //delay(200);
+      //}
+      //else if(side == "down"){
+        //this.robot_down();
+        //side = "left" ;
+        //delay(200);
+      //}
+      //else if(side == "right"){
+        //this.robot_right();
+        //side = "up" ;
+        //delay(200);
+      //}
+       
+    //}
+  //}
+  //}
+  //void turn_right()
+  //{
+    //if(key == 'd'){
+      //if(side == "up"){
+        //this.robot_up();
+        //side = "right" ;
+        //delay(200);
+      //}
+      //else if(side == "left"){
+        //this.robot_left();
+        //side = "up" ;
+        //delay(200);
+      //}
+      //else if(side == "down"){
+        //this.robot_down();
+        //side = "right" ;
+        //delay(200);
+      //}
+      //else if(side == "right"){
+        //this.robot_right();
+        //side = "down" ;
+        //delay(200);
+      //}
+    //}
+  void turn_left() {
+
+    for (int x = 0; x < sidecollect.length; x +=1) {
+      if (sidecollect[x] == this.side) {
+        if (x == 3) this.side = sidecollect[0];
+        else  this.side = sidecollect[x+1];
+        break;
+      }
+    }
+    background(255);
+  }
+
+  void turn_right() {
+
+    for (int x = 0; x < sidecollect.length; x +=1) {
+      if (sidecollect[x] == this.side) {
+        if (x == 0) this.side = sidecollect[3];
+        else  this.side = sidecollect[x-1];
+        
+        break;
+      
+      }
+    }
+    background(255);
+  }
     
     
       
-  }
-  }
+  
+  
   
   void turn(){
     
@@ -314,4 +357,34 @@ class Target{
     
   }
   
+}
+
+class InputPro
+{
+  char move_forward,turn_left,turn_right;
+  InputPro(char move_forward,char turn_left,char turn_right)
+  {
+    this.move_forward=move_forward;
+    this.turn_left=turn_left;
+    this.turn_right=turn_right;
+  }
+  void check_input()
+  {
+  if(keyPressed)
+    {
+    delay(250);
+    if(key==this.move_forward)
+      {
+      robot.move_forward();
+      }
+    else if(key==this.turn_left)
+      {
+      robot.turn_left();
+      }
+    else if(key==this.turn_right)
+      {
+      robot.turn_right();
+      }
+    }
+  }
 }
