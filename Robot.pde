@@ -63,6 +63,7 @@ void draw(){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////// 
+<<<<<<< HEAD
 /////////////////////////////////////////////////////
 //
 // Programmer: PARINYA JAIHARN
@@ -70,6 +71,9 @@ void draw(){
 // Description: draw rectangle by recieve loop position from draw()
 // 
 ///////////////////////////////////////////////////// 
+=======
+ 
+>>>>>>> 23bfc7912a7c1bc71760597cfe414739206684ea
 class World{
   float row;
   float col;
@@ -97,6 +101,7 @@ class World{
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+<<<<<<< HEAD
 /////////////////////////////////////////////////////
 //
 // Programmer: PARINYA JAIHARN
@@ -104,6 +109,8 @@ class World{
 // Description: draw rectangle by recieve random position from draw()
 // 
 /////////////////////////////////////////////////////
+=======
+>>>>>>> 23bfc7912a7c1bc71760597cfe414739206684ea
 class Barrier{
   boolean empty = false;
   float ranrow;
@@ -129,6 +136,7 @@ class Barrier{
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
 /////////////////////////////////////////////////////
 //
 // Programmer: PARINYA JAIHARN
@@ -136,6 +144,9 @@ class Barrier{
 // Description: 1st vertion - draw robot in circle shapemove by keyReleased()
 // 
 /////////////////////////////////////////////////////
+=======
+
+>>>>>>> 23bfc7912a7c1bc71760597cfe414739206684ea
 class Robot{
   float row;
   float col;
