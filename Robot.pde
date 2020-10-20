@@ -137,6 +137,7 @@ class Barrier{
 
 /////////////////////////////////////////////////////////////////////////////////////////
 <<<<<<< HEAD
+<<<<<<< HEAD
 /////////////////////////////////////////////////////
 //
 // Programmer: PARINYA JAIHARN
@@ -147,6 +148,15 @@ class Barrier{
 =======
 
 >>>>>>> 23bfc7912a7c1bc71760597cfe414739206684ea
+=======
+/////////////////////////////////////////////////////
+//
+// Programmer: (Suphawit Auchariyamet)
+//
+// Description: (check side collect for robot movement)
+// 
+/////////////////////////////////////////////////////
+>>>>>>> f4efe48c75060c1dd401ed969d9db461403e013c
 class Robot{
   float row;
   float col;
@@ -315,6 +325,14 @@ class Robot{
         //delay(200);
       //}
     //}
+
+/////////////////////////////////////////////////////
+//
+// Programmer: (Suphawit Auchariyamet)
+//
+// Description: (change turnleft method for inputprocessor)(if robot side =w robot will move follow ex side)
+// 
+/////////////////////////////////////////////////////
   void turn_left() {
 
     for (int x = 0; x < sidecollect.length; x +=1) {
@@ -327,6 +345,13 @@ class Robot{
     background(255);
   }
 
+/////////////////////////////////////////////////////
+//
+// Programmer: (Suphawit Auchariyamet)
+//
+// Description: (change turn right method for inputprocessor)(if robot side =w robot will move follow ex side)
+// 
+/////////////////////////////////////////////////////
   void turn_right() {
 
     for (int x = 0; x < sidecollect.length; x +=1) {
@@ -388,7 +413,13 @@ class Target{
   }
   
 }
-
+/////////////////////////////////////////////////////
+//
+// Programmer: (Suphawit Auchariyamet)
+//
+// Description: (Input Processor)(check if key = keyboard key robot will move or turnleft turn right follow command)
+// 
+/////////////////////////////////////////////////////
 class InputPro
 {
   char move_forward,turn_left,turn_right;
