@@ -1,464 +1,298 @@
-int row = 10;
-int column = 10;
-int rancol;
-int ranrow;
-int n = 30;
-int rancolTarget ;
-int ranrowTarget ;
+World world ;
 
-World[][] world;
-Barrier[] barrier;
-Target target ;
-Robot robot;
-InputPro input;
-
-void setup(){
-  
-  size(1000,1000); 
-  
-  world = new World[column][row];
-  for(int i = 0; i < column ; i++){
-    for(int j = 0; j < row; j++){
-      world[i][j] = new World(i*100, j*100, 100, 100 );
-   }
-  }
-  
-  barrier = new Barrier[n];
-  for(int i= 0; i < n; i++){
-    rancol = round(random(column));
-    ranrow = round(random(row));
-    barrier[i] = new Barrier(rancol, ranrow, 100, 100);
-  }
-  rancolTarget = round(random(column));
-  ranrowTarget = round(random(row));
-  
-  robot = new Robot(rancol, ranrow);
-  target = new Target(rancolTarget , ranrowTarget) ;
-  
+void setup() {
+  size(1000, 1000);
+  world = new World(10, 10, "Map.txt") ;
 }
 
-void draw(){
-  input = new InputPro('w', 'a', 'd');
-  //background(255);
-  
-  for(int i = 0; i < column ; i++){
-   for(int j = 0; j < row; j++){
-      world[i][j].drawWorld();
-   }
-  }
-  
-  for(int i = 0; i < n; i++){
-    barrier[i].drawBarrier();
-  }
-
-  
-  
-  if(target.show == true){
-    target.show() ;
-  }
-  target.hide() ;
-  
-  input.check_input();
-  robot.drawRobot();
+void draw() {
+  background(255) ;
+  world.drawWorld() ;
+  world.worldUpdate() ;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////// 
-<<<<<<< HEAD
-/////////////////////////////////////////////////////
-//
-// Programmer: PARINYA JAIHARN
-//
-// Description: draw rectangle by recieve loop position from draw()
-// 
-///////////////////////////////////////////////////// 
-=======
- 
->>>>>>> 23bfc7912a7c1bc71760597cfe414739206684ea
-class World{
-  float row;
-  float col;
-  float w;
-  float h;
-  String[] map = loadStrings("Map.txt");
+class World {
+  int row, col, blockWeight, blockHeight ;
+  int walls ;
+  boolean blocked ;
+  Robots robot ;
+  Barrier[] barrier ;
+  Target target ;
+  InputProcesser input ;
 
-  World(float row, float col, float w, float h){
-    this.row = row;
-    this.col = col;
-    this.w = w;
-    this.h = h;
+  World(int row, int col ) {
+    this.blocked = false ;
+    this.row = row ;
+    this.col = col ;
+    blockWeight = width/row ;
+    blockHeight = height/col ;
+    robot = new Robots(5, 5) ;
+    input = new InputProcesser('w', 'a', 'd', robot);
+    barrier = new Barrier[10] ;
+    for (int i = 0; i < 10; i ++)
+    {
+      barrier[i] = new Barrier(i, i, 100, 100) ;
+    }
+    target = new Target(1, 2, 50) ;
   }
-  
-  void drawWorld(){
+
+  World(int row, int col, String fileName ) {
+    this.blocked = false ;
+    this.row = row ;
+    this.col = col ;
+    blockWeight = width/row ;
+    blockHeight = height/col ;
+    robot = new Robots(5, 5) ;
+    input = new InputProcesser('w', 'a', 'd', robot);
+    target = new Target(1, 2, 50) ;
+
+    String[] all_lines = loadStrings(fileName);
+    barrier = new Barrier[all_lines.length] ;
+    for (int i = 0; i < all_lines.length; i++) {
+      String[] barrier_column_rown = split(all_lines[i], ',');
+      barrier[i] = new Barrier(int(barrier_column_rown[0]), int (barrier_column_rown[1]), blockWeight, blockHeight);
+      println(all_lines.length);
+    }
+  }
+
+  void drawWorld() {
     stroke(0);
-    fill(225);
-    rect(this.row ,this.col , this.w, this.h); 
-  }
-  void start()
-  {
-  
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-<<<<<<< HEAD
-/////////////////////////////////////////////////////
-//
-// Programmer: PARINYA JAIHARN
-//
-// Description: draw rectangle by recieve random position from draw()
-// 
-/////////////////////////////////////////////////////
-=======
->>>>>>> 23bfc7912a7c1bc71760597cfe414739206684ea
-class Barrier{
-  boolean empty = false;
-  float ranrow;
-  float rancol;
-  float w;
-  float h;
-  
-  Barrier(float rancol, float ranrow, float w, float h){
-    this.ranrow = ranrow;
-    this.rancol = rancol;
-    this.w = w;
-    this.h = h;
-  }
-  
-  void drawBarrier(){
-    for(int i = 0; i < 10; i++){
-      stroke(0);
-      fill(150);
-      rect(this.rancol*100 ,this.ranrow*100 , this.w, this.h);
+    for (int i = 0; i <= col; i++) {
+      line(i*blockWeight, 0, i*blockWeight, height) ;
     }
+    for (int i = 0; i <= row; i++) {
+      line(0, i*blockHeight, width, i*blockHeight) ;
+    }
+
+    robot.drawrobot() ;
+
+    for (Barrier each_barrier : barrier ) {
+      each_barrier.drawBarrier() ;
+    }
+    if (checkTarget() == false) {
+      target.show() ;
+    }
+    world.isBlock() ;
   }
-  
+
+  void worldUpdate() {
+    input.check_input() ;
+  }
+
+  boolean isBlock() {
+
+    for (int i = 0; i <= 29; i ++) {
+      if (robot.side == "up" && robot.getRowRobot()-1 == barrier[i].getRowBarrier() && robot.getColRobot() == barrier[i].getColBarrier()) {
+        robot.blocked = true;
+        return true ;
+      } else if (robot.side == "left" && robot.getColRobot()-1 == barrier[i].getColBarrier() && robot.getRowRobot() == barrier[i].getRowBarrier()) {
+        robot.blocked = true;
+        return true ;
+      } else if (robot.side == "down" && robot.getRowRobot()+1 == barrier[i].getRowBarrier() && robot.getColRobot() == barrier[i].getColBarrier()) {
+        robot.blocked = true;
+        return true ;
+      } else if (robot.side == "right" && robot.getColRobot()+1 == barrier[i].getColBarrier() && robot.getRowRobot() == barrier[i].getRowBarrier()) {
+        robot.blocked = true;
+        return true ;
+      }
+    }
+    return false ;
+  }
+
+  boolean checkTarget() {
+    if (target.getRowTarget() == robot.getRowRobot() && target.getColTarget() == robot.getColRobot()) {
+      return true ;
+    } else return false ;
+  }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-<<<<<<< HEAD
-<<<<<<< HEAD
-/////////////////////////////////////////////////////
-//
-// Programmer: PARINYA JAIHARN
-//
-// Description: 1st vertion - draw robot in circle shapemove by keyReleased()
-// 
-/////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////
-//
-// Programmer: (Wichasith)
-//
-// Description: (create triangle and turnLeft turnRight moveForward but Suphawit change movement)
-// 
-/////////////////////////////////////////////////////
-=======
-
->>>>>>> 23bfc7912a7c1bc71760597cfe414739206684ea
-=======
-/////////////////////////////////////////////////////
-//
-// Programmer: (Suphawit Auchariyamet)
-//
-// Description: (check side collect for robot movement)
-// 
-/////////////////////////////////////////////////////
->>>>>>> f4efe48c75060c1dd401ed969d9db461403e013c
-class Robot{
-  float row;
-  float col;
-  char  side ;
-  char[]  sidecollect={'w','a','s','d'};
-  
- 
-  Robot(float row, float col){
-    this.row = row;
-    this.col = col;
-    this.side = 'w' ;
+class Robots {
+  float row, col ;
+  String side  ;
+  boolean blocked ;
+  Robots(int row, int col ) {
+    this.row = row ;
+    this.col = col ;
+    this.side = "up" ;
   }
-  
-  void drawRobot(){
-    fill(255);
-    
-    if (this.side == 'w'){
+  void drawrobot() {
+
+    stroke(0);
+
+    if (this.side == "up") {
       this.robot_up();
-     
     }
-    if (this.side == 'a'){
+    if (this.side == "left") {
       this.robot_left();
     }
-    if (this.side == 's'){
-       this.robot_down();
-   
+    if (this.side == "down") {
+      this.robot_down();
     }
-    if (this.side == 'd'){
+    if (this.side == "right") {
       this.robot_right();
     }
-  
   }
   void robot_up()
   {
-      line((this.col+(this.col+1))/2*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
-      line((this.col+(this.col+1))/2*100,this.row*100,(this.col)*100,(this.row+1)*100);
-      line((this.col+1)*100,this.row*100,(this.col+1)*100,(this.row+1)*100);
+    line((this.col+(this.col+1))/2*100, this.row*100, (this.col+1)*100, (this.row+1)*100);
+    line((this.col+(this.col+1))/2*100, this.row*100, (this.col)*100, (this.row+1)*100);
+    line((this.col)*100, (this.row+1)*100, (this.col+1)*100, (this.row+1)*100);
   }
   void robot_left()
   {
-      line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row)*100);
-      line((this.col)*100,(this.row+1+this.row)/2*100,(this.col+1)*100,(this.row+1)*100);  
-      line((this.col+1)*100,(this.row)*100,(this.col+1)*100,(this.row+1)*100);
+    line((this.col)*100, (this.row+1+this.row)/2*100, (this.col+1)*100, (this.row)*100);
+    line((this.col)*100, (this.row+1+this.row)/2*100, (this.col+1)*100, (this.row+1)*100);  
+    line((this.col+1)*100, (this.row)*100, (this.col+1)*100, (this.row+1)*100);
   }
   void robot_down()
   {
-       line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col+1)*100,(this.row)*100);
-       line((this.col+(this.col+1))/2*100,(this.row+1)*100,(this.col)*100,(this.row)*100);
-       line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+    line((this.col+(this.col+1))/2*100, (this.row+1)*100, (this.col+1)*100, (this.row)*100);
+    line((this.col+(this.col+1))/2*100, (this.row+1)*100, (this.col)*100, (this.row)*100);
+    line((this.col)*100, (this.row)*100, (this.col+1)*100, (this.row)*100);
   }
   void robot_right()
   {
-      line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row)*100);
-      line((this.col+1)*100,(this.row+1+this.row)/2*100,(this.col)*100,(this.row+1)*100);  
-      line((this.col)*100,(this.row)*100,(this.col)*100,(this.row+1)*100);
+    line((this.col+1)*100, (this.row+1+this.row)/2*100, (this.col)*100, (this.row)*100);
+    line((this.col+1)*100, (this.row+1+this.row)/2*100, (this.col)*100, (this.row+1)*100);  
+    line((this.col)*100, (this.row)*100, (this.col)*100, (this.row+1)*100);
   }
-  
-  
-  
-  void move_forward(){
-  
-  if(this.side == 'w'){
-      
-      robot.row-=1;
-      for (int k = 0 ; k < barrier.length ; k++){
-      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
-        robot.row+=1;
-      
-      }
-    }
-    if(robot.row == -1){
-      robot.row+=1;
-    }
-   
-    }
-   if(this.side == 'a'){
-      robot.col-=1;
-      for (int k = 0 ; k < barrier.length ; k++){
-      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
-        robot.col+=1;
-      }
-    }
-    if(robot.col == -1){
-      robot.col+=1;
-    }
-    }
-    if(this.side == 's'){
-      
-      robot.row+=1;
-      for (int k = 0 ; k < barrier.length ; k++){
-      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
-        robot.row-=1;
-      
-      }
-    }
-    if(robot.row == 10){
-      robot.row-=1;
-       
-    }
-    
-    }
-    
-    if(this.side == 'd'){
-      robot.col+=1;
-      for (int k = 0 ; k < barrier.length ; k++){
-      if(robot.row == barrier[k].ranrow && robot.col == barrier[k].rancol ){
-        robot.col-=1;
-      }
-    }
-    if(robot.col == column){
-      robot.col-=1;
-    }
-    }
-  }
-  
-  //void turn_left(){
-  //if(keyPressed) {
-    //fill(124,252,0);
-    
-    //if(key == 'a'){
-      //if(side == "up"){
-        //this.robot_up();
-        //side = "left" ;
-        //delay(200);
-      //}
-      //else if(side == "left"){
-        //this.robot_left();
-        //side = "down" ;
-        //delay(200);
-      //}
-      //else if(side == "down"){
-        //this.robot_down();
-        //side = "left" ;
-        //delay(200);
-      //}
-      //else if(side == "right"){
-        //this.robot_right();
-        //side = "up" ;
-        //delay(200);
-      //}
-       
-    //}
-  //}
-  //}
-  //void turn_right()
-  //{
-    //if(key == 'd'){
-      //if(side == "up"){
-        //this.robot_up();
-        //side = "right" ;
-        //delay(200);
-      //}
-      //else if(side == "left"){
-        //this.robot_left();
-        //side = "up" ;
-        //delay(200);
-      //}
-      //else if(side == "down"){
-        //this.robot_down();
-        //side = "right" ;
-        //delay(200);
-      //}
-      //else if(side == "right"){
-        //this.robot_right();
-        //side = "down" ;
-        //delay(200);
-      //}
-    //}
 
-/////////////////////////////////////////////////////
-//
-// Programmer: (Suphawit Auchariyamet)
-//
-// Description: (change turnleft method for inputprocessor)(if robot side =w robot will move follow ex side)
-// 
-/////////////////////////////////////////////////////
+
+
+  void move_forward() {
+
+    if (world.isBlock() == false )
+    {
+      if (this.side == "up") {
+        this.row -= 1 ;
+      }
+      if (this.side == "left") {
+        this.col -= 1 ;
+      }
+      if (this.side == "down") {
+        this.row += 1 ;
+      }
+      if (this.side == "right") {
+        this.col += 1 ;
+      }
+    }
+    print(world.isBlock()) ;
+  }
+
   void turn_left() {
 
-    for (int x = 0; x < sidecollect.length; x +=1) {
-      if (sidecollect[x] == this.side) {
-        if (x == 3) this.side = sidecollect[0];
-        else  this.side = sidecollect[x+1];
-        break;
-      }
+    if (this.side == "up") {
+      this.side = "left" ;
+    } else if (this.side == "left") {
+      this.side = "down" ;
+    } else if (this.side == "down") {
+      this.side = "right" ;
+    } else if (this.side == "right") {
+      this.side = "up" ;
     }
-    background(255);
   }
 
-/////////////////////////////////////////////////////
-//
-// Programmer: (Suphawit Auchariyamet)
-//
-// Description: (change turn right method for inputprocessor)(if robot side =w robot will move follow ex side)
-// 
-/////////////////////////////////////////////////////
   void turn_right() {
 
-    for (int x = 0; x < sidecollect.length; x +=1) {
-      if (sidecollect[x] == this.side) {
-        if (x == 0) this.side = sidecollect[3];
-        else  this.side = sidecollect[x-1];
-        
-        break;
-      
-      }
+    if (this.side == "up") {
+      this.side = "right" ;
+    } else if (this.side == "right") {
+      this.side = "down" ;
+    } else if (this.side == "down") {
+      this.side = "left" ;
+    } else if (this.side == "left") {
+      this.side = "up" ;
     }
-    background(255);
   }
-    
-    
-      
-  
-  
-  
-  void turn(){
-    
-  }
+
+
   float getRowRobot() {
     return this.row ;
   }
-  
+
   float getColRobot() {
+    return this.col ;
+  }
+
+  String getSide() {
+    return this.side ;
+  }
+}
+
+class Barrier {
+  int row, col ;
+  int blockWeight, blockHeight ;
+  Barrier(int row, int col, int blockWeight, int blockHeight) {
+    this.row = row ;
+    this.col = col ;
+    this.blockWeight = blockWeight ;
+    this.blockHeight = blockHeight ;
+  }
+
+  void drawBarrier() {
+    noStroke() ;
+    fill(100) ;
+    rect( col*blockWeight, row*blockHeight, blockWeight, blockHeight ) ;
+  }
+
+  int getRowBarrier() {
+    return this.row ;
+  }
+
+  int getColBarrier() {
     return this.col ;
   }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////
-//
-// Programmer: (Wichasith)
-//
-// Description: (create target and random position in world)
-// 
-/////////////////////////////////////////////////////
-class Target{
-  float row;
-  float col;
-  int size ;
-  boolean show ;
-  Target(float row, float col){
-    this.row = row;
-    this.col = col;
-    size = 50 ;
-    show = true ;
+class Target {
+  int row, col, size ;
+  Target(int row, int col, int size) {
+    this.row = row ;
+    this.col = col ;
+    this.size = size ;
   }
-  
-  void show(){
-    fill(255,20,147);
+
+  void show() {
+    fill(255, 20, 147);
     ellipseMode(CORNER);
     ellipse(this.col*100+size/2, this.row*100+size/2, size, size);
-    
-    
+  }  
+
+  int getRowTarget() {
+    return this.row ;
   }
-  void hide(){
-    if (robot.getRowRobot() == this.row && robot.getColRobot() == this.col ){
-      show = false ; 
-      
-    }
-    
+
+  int getColTarget() {
+    return this.col ;
   }
-  
 }
-/////////////////////////////////////////////////////
-//
-// Programmer: (Suphawit Auchariyamet)
-//
-// Description: (Input Processor)(check if key = keyboard key robot will move or turnleft turn right follow command)
-// 
-/////////////////////////////////////////////////////
-class InputPro
+
+class InputProcesser
 {
-  char move_forward,turn_left,turn_right;
-  InputPro(char move_forward,char turn_left,char turn_right)
+  char move_forward, turn_left, turn_right;
+  Robots robot ;
+
+  InputProcesser(char move_forward, char turn_left, char turn_right, Robots robot)
   {
     this.move_forward=move_forward;
     this.turn_left=turn_left;
     this.turn_right=turn_right;
+    this.robot = robot ;
   }
   void check_input()
   {
-  if(keyPressed)
+    if (keyPressed)
     {
-    delay(250);
-    if(key==this.move_forward)
+      delay(250);
+      if (key==this.move_forward)
       {
-      robot.move_forward();
-      }
-    else if(key==this.turn_left)
+        robot.move_forward();
+      } else if (key==this.turn_left)
       {
-      robot.turn_left();
-      }
-    else if(key==this.turn_right)
+        robot.turn_left();
+      } else if (key==this.turn_right)
       {
-      robot.turn_right();
+        robot.turn_right();
       }
     }
   }
