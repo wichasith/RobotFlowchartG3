@@ -3,12 +3,23 @@ World world ;
 void setup() {
   size(1000, 1000);
   world = new World(10, 10, "Map.txt") ;
+  Node node ;
+  node = new Node("move()") ;
+  node.addNode(node,"turnleft()") ;
+  node.addNode(node,"turnright()") ;
+  
+  println(node.data) ;
+  println(node.next.data) ;
+  //println(node.next.next.data) ;
+  
+  world.addFlowchart(node) ;
 }
 
 void draw() {
   background(255) ;
   world.drawWorld() ;
   world.worldUpdate() ;
+  world.doFlowchart() ;
 }
 
 class World {
@@ -19,6 +30,7 @@ class World {
   Barrier[] barrier ;
   Target target ;
   InputProcesser input ;
+  Node doNode,start ;
 
   World(int row, int col ) {
     this.blocked = false ;
@@ -51,8 +63,9 @@ class World {
     for (int i = 0; i < all_lines.length; i++) {
       String[] barrier_column_rown = split(all_lines[i], ',');
       barrier[i] = new Barrier(int(barrier_column_rown[0]), int (barrier_column_rown[1]), blockWeight, blockHeight);
-      println(all_lines.length);
+      //println(all_lines.length);
     }
+    
   }
 
   void drawWorld() {
@@ -73,6 +86,7 @@ class World {
       target.show() ;
     }
     world.isBlock() ;
+    
   }
 
   void worldUpdate() {
@@ -104,6 +118,32 @@ class World {
       return true ;
     } else return false ;
   }
+  
+  void addFlowchart(Node node) {
+    doNode = node ;
+    start = node;
+    
+  }
+  
+  void doFlowchart() {
+    if (doNode != null && frameCount%50==0) {
+      println(doNode.data);
+    if(doNode.data == "move()") {
+      robot.move_forward() ;
+    }
+    else if (doNode.data == "turnleft()"){
+      robot.turn_left()  ;
+    }
+    else if (doNode.data == "turnright()"){
+      robot.turn_right()  ;
+    }
+    
+    doNode = doNode.next ;
+    }
+  //  else if(doNode == null && frameCount%50==0){
+  //    doNode = start;}
+  }
+  
 }
 
 class Robots {
@@ -176,7 +216,7 @@ class Robots {
         this.col += 1 ;
       }
     }
-    print(world.isBlock()) ;
+    //print(world.isBlock()) ;
   }
 
   void turn_left() {
