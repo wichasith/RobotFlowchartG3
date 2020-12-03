@@ -131,10 +131,10 @@ class World {
     if(doNode.data == "move()") {
       robot.move_forward() ;
     }
-    else if (doNode.data == "turnleft()"){
+      else if (doNode.data == "turnleft()"){
       robot.turn_left()  ;
     }
-    else if (doNode.data == "turnright()"){
+      else if (doNode.data == "turnright()"){
       robot.turn_right()  ;
     }
     
