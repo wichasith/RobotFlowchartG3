@@ -6,7 +6,7 @@ void setup() {
   Node node ;
   node = new Node("move()") ;
   node.addNode(node,"turnleft()") ;
-  node.addNode(node,"turnright()") ;
+  //node.addNode(node,"turnright()") ;
   
   println(node.data) ;
   println(node.next.data) ;
@@ -108,6 +108,18 @@ class World {
       } else if (robot.side == "right" && robot.getColRobot()+1 == barrier[i].getColBarrier() && robot.getRowRobot() == barrier[i].getRowBarrier()) {
         robot.blocked = true;
         return true ;
+      } else if (robot.side == "up" && robot.getRowRobot()-1 == -1) {
+        robot.blocked = true;
+        return true ;
+      } else if (robot.side == "left" && robot.getColRobot()-1  == -1) {
+        robot.blocked = true;
+        return true ;
+      } else if (robot.side == "down" && robot.getRowRobot()+1 == row) {
+        robot.blocked = true;
+        return true ;
+      } else if (robot.side == "right" && robot.getColRobot()+1 == col) {
+        robot.blocked = true;
+        return true ;
       }
     }
     return false ;
@@ -140,8 +152,10 @@ class World {
     
     doNode = doNode.next ;
     }
-  //  else if(doNode == null && frameCount%50==0){
-  //    doNode = start;}
+    
+   
+    else if(doNode == null && frameCount%50==0){
+      doNode = start;}
   }
   
 }
@@ -297,6 +311,7 @@ class Target {
     ellipseMode(CORNER);
     ellipse(this.col*100+size/2, this.row*100+size/2, size, size);
   }  
+  
 
   int getRowTarget() {
     return this.row ;
