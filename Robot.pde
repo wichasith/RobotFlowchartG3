@@ -19,7 +19,7 @@ void draw() {
   background(255) ;
   world.drawWorld() ;
   world.worldUpdate() ;
-  world.doFlowchart() ;
+  //world.doFlowchart() ;
 }
 
 class World {
@@ -85,6 +85,11 @@ class World {
     if (checkTarget() == false) {
       target.show() ;
     }
+    
+    if (checkTarget() == true) {
+      target.randomNewTarget() ;
+    }
+    
     world.isBlock() ;
     
   }
@@ -130,6 +135,9 @@ class World {
       return true ;
     } else return false ;
   }
+  
+  
+  
   
   void addFlowchart(Node node) {
     doNode = node ;
@@ -311,6 +319,13 @@ class Target {
     ellipseMode(CORNER);
     ellipse(this.col*100+size/2, this.row*100+size/2, size, size);
   }  
+  
+  void randomNewTarget() {
+   
+    this.row = round(random(9)) ;
+    this.col = round(random(9)) ;
+    
+  }
   
 
   int getRowTarget() {
