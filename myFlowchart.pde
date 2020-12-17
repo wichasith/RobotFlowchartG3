@@ -57,11 +57,44 @@ class Flowchart {
       flowchart = new Node(condition, trueCase, falseCase);
       addedIf = flowchart;
     } else {
-      addedIf = flowchart.addNode(flowchart,condition, trueCase, falseCase);
+      addedIf = flowchart.addNode(flowchart, condition, trueCase, falseCase);
     }
   }
-  
- 
 
- 
+  void addTrueCase(String condition){
+   Node lastTrueNode;
+   Node linkedTrueNode;
+   lastTrueNode = findAltNode(addedIf.next);
+   linkedTrueNode = lastTrueNode.altNext;
+   lastTrueNode.next = new Node(condition);
+   lastTrueNode.altNext = null; 
+   lastTrueNode.next.altNext = linkedTrueNode;
+  }
+  
+  void addFalseCase(String condition) {
+    Node lastTrue; 
+    Node lastFalse ;
+    lastTrue = findAltNode(addedIf.next);
+    this.addCommand(condition);
+    lastFalse = findLastNode(lastTrue);
+    lastTrue.altNext = lastFalse;
+    
+  }
+
+
+  Node findAltNode(Node node) {
+    if (node.altNext != null) {
+      return node;
+    } else {
+      return findAltNode(node.next);
+    }
+  }
+
+  Node findLastNode(Node node) {
+    if (node.next == null) {
+      return node;
+    } else {
+      return findLastNode(node.next);
+    }
+  }
 }

@@ -1,3 +1,4 @@
+
 World world ;
 
 void setup() {
@@ -19,6 +20,8 @@ void setup() {
   println(flow.flowchart.data,flow.flowchart.next.data,flow.flowchart.next.next.data);
   //println(flow.addedIf.data);
   world.addFlowchart(flow) ;
+  flow.addFalseCase("move()");
+  flow.addCommand("move()");
 }
 
 void draw() {
