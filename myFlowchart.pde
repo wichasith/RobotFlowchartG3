@@ -2,19 +2,66 @@
 class Node {
   String data = null ;
   Node next = null ;
-  
+  Node altNext = null; 
+
   Node(String data) {
     this.data = data ;
-    
   }
-  
-  void addNode(Node position , String newData) {
+
+  Node(String condition, String trueData, String falseData) {
+    data = condition;
+    this.next = new Node(trueData);
+    this.next.next = new Node(falseData);
+    this.altNext = this.next.next;
+    this.next.altNext = this.next.next;
+  }
+
+
+
+
+  void addNode(Node position, String newData) {
     if (position.next == null) {
-      position.next = new Node(newData) ; 
+      position.next = new Node(newData) ;
+    } else 
+    addNode(position.next, newData) ;
+  }
+
+  Node addNode(Node position, String newData, String trueData, String falseData) {
+    if (position.next == null) {
+      position.next = new Node(newData) ;
+      position.next.next = new Node(trueData);
+      position.next.next.next = new Node(falseData);
+      position.next.altNext = position.next.next.next;
+      position.next.next.altNext = position.next.next.next;
+      return position.next;
+    } else 
+    return addNode(position.next, newData, trueData, falseData) ;
+  }
+}
+
+class Flowchart {
+  Node flowchart = null; 
+  Node addedIf = null; 
+
+
+  void addCommand(String data) { 
+    if (flowchart == null) {
+      flowchart = new Node(data);
+    } else {
+      flowchart.addNode(flowchart, data);
     }
-    else 
-      addNode(position.next , newData) ;
-    
+  }
+
+  void addIf(String condition, String trueCase, String falseCase) {
+    if (flowchart == null) {
+      flowchart = new Node(condition, trueCase, falseCase);
+      addedIf = flowchart;
+    } else {
+      addedIf = flowchart.addNode(flowchart,condition, trueCase, falseCase);
+    }
   }
   
+ 
+
+ 
 }

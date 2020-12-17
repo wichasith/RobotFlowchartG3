@@ -4,22 +4,28 @@ void setup() {
   size(1000, 1000);
   world = new World(10, 10, "Map.txt") ;
   Node node ;
-  node = new Node("move()") ;
-  node.addNode(node,"turnleft()") ;
+  //node = new Node("move()") ;
+  //node.addNode(node,"turnleft()") ;
   //node.addNode(node,"turnright()") ;
   
-  println(node.data) ;
-  println(node.next.data) ;
+  //println(node.data) ;
+  //println(node.next.data) ;
   //println(node.next.next.data) ;
   
-  world.addFlowchart(node) ;
+  //world.addFlowchart(node) ;
+  
+  Flowchart flow = new Flowchart();
+  flow.addIf("if isBlock()","turnleft()","move()");
+  println(flow.flowchart.data,flow.flowchart.next.data,flow.flowchart.next.next.data);
+  //println(flow.addedIf.data);
+  world.addFlowchart(flow) ;
 }
 
 void draw() {
   background(255) ;
   world.drawWorld() ;
   world.worldUpdate() ;
-  //world.doFlowchart() ;
+  world.doFlowchart() ;
 }
 
 class World {
@@ -139,31 +145,51 @@ class World {
   
   
   
-  void addFlowchart(Node node) {
-    doNode = node ;
-    start = node;
+  void addFlowchart(Flowchart inputFlowchart) {
+    doNode = inputFlowchart.flowchart ;
+    start = inputFlowchart.flowchart;
     
   }
   
   void doFlowchart() {
     if (doNode != null && frameCount%50==0) {
-      println(doNode.data);
+    
+    if (doNode.data == "if isBlock()") {
+      
+      if (isBlock()) {
+        doNode = doNode.next ;  
+      }
+      else {
+        doNode = doNode.altNext ; 
+      }
+    }
+      
+      
     if(doNode.data == "move()") {
       robot.move_forward() ;
+      println(doNode.data);
     }
       else if (doNode.data == "turnleft()"){
       robot.turn_left()  ;
+      println(doNode.data);
     }
       else if (doNode.data == "turnright()"){
       robot.turn_right()  ;
+      println(doNode.data);
     }
     
+    if (doNode.altNext != null ) {
+      doNode = doNode.altNext.next ; 
+    } 
+    else {
     doNode = doNode.next ;
     }
-    
+    }
    
     else if(doNode == null && frameCount%50==0){
-      doNode = start;}
+      doNode = start;
+      println();
+      println("start");}
   }
   
 }
