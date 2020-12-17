@@ -80,6 +80,17 @@ class Flowchart {
     lastTrue.altNext = lastFalse;
     
   }
+  
+   
+   void addFalseCase(Flowchart addedFlowchart){
+       Node lastFalseNode; 
+       Node lastTrueNode;
+       lastTrueNode = findAltNode(addedIf.next);
+       lastFalseNode = findLastNode(lastTrueNode.next);
+       lastFalseNode.next = addedFlowchart.flowchart;
+       lastTrueNode.altNext = lastFalseNode.next;
+      
+    }
 
 
   Node findAltNode(Node node) {
