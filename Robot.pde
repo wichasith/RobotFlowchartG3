@@ -17,14 +17,13 @@ void setup() {
   
   Flowchart flow = new Flowchart();
   flow.addIf("if isBlock()","turnleft()","move()");
-  Flowchart myflow = new Flowchart();
-  myflow.addIf("if isBlock()","turnleft()","move()");
+  flow.addIf("if isBlock()","turnright()","move()");
   
   println(flow.flowchart.data,flow.flowchart.next.data,flow.flowchart.next.next.data);
   //println(flow.addedIf.data);
   world.addFlowchart(flow) ;
-  flow.addFalseCase(myflow);
-  flow.addFalseCase("turnright()");
+  //flow.addFalseCase(myflow);
+  //flow.addFalseCase("turnright()");
   
 }
 
